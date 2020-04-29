@@ -7,75 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
-class Words implements Comparable<Words> {
-    private String word;
-    private int frequency;
-    private List<Integer> docIds;
 
-    public Words(String word, int frequency, LinkedList<Integer> docIds) {
-        this.word = word;
-        this.frequency = frequency;
-        this.docIds = docIds;
-    }
-
-    @Override
-    public int hashCode() {
-        return word.hashCode() + frequency + docIds.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Words)) {
-            return false;
-        }
-
-        Words other = (Words) obj;
-        return this.word.equals(other.word);
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public int getFrequency() {
-        return frequency;
-    }
-
-    public List<Integer> getDocIds() {
-        return docIds;
-    }
-
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
-    }
-
-    public void addToPostingIndex(int docId) {
-        getDocIds().add(docId);
-    }
-
-    public String printDocIds() {
-        StringBuilder sb = new StringBuilder();
-        for (int docId : getDocIds()) {
-            sb.append(docId);
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "Words{" +
-                "word='" + word + '\'' +
-                ", frequency=" + frequency +
-                ", docIds=" + docIds +
-                '}';
-    }
-
-    @Override
-    public int compareTo(@NotNull Words other) {
-        return Integer.compare(this.frequency, other.frequency);
-    }
-}
 
 public class PostIndexing {
     private List<String> files = new ArrayList<>();
@@ -84,6 +16,7 @@ public class PostIndexing {
 
     private void readFiles(String directoryPath) {
         File directory = new File(directoryPath);
+        //读取所有文件
         File[] filesToProcessing = directory.listFiles();
         assert filesToProcessing != null;
         for (File file : filesToProcessing) {
@@ -96,7 +29,9 @@ public class PostIndexing {
     }
 
     private Map<String, Integer> saveToDict(String fileName, String directoryPath) {
+        //取出doc文档编号
         int docId = Integer.parseInt(Pattern.compile("[^0-9]").matcher(fileName).replaceAll("").trim());
+        //添加所有id作为全集，后面实现NOT操作
         allIds.add(docId);
         File file = new File(directoryPath + "/" + fileName);
         BufferedReader br = null;
@@ -118,25 +53,6 @@ public class PostIndexing {
         return dict;
     }
 
-    private void addToWords(@NotNull Map<String, Integer> dict) {
-        for (String s : dict.keySet()) {
-            int docId = dict.get(s);
-            Words w = new Words(s, 0, new LinkedList<>());
-            w.addToPostingIndex(docId);
-            if (!wordsMap.containsKey(s)) {
-                wordsMap.put(s, w);
-            } else {
-                wordsMap.get(s).addToPostingIndex(docId);
-            }
-        }
-
-        for (String word : wordsMap.keySet()) {
-            Words wordInMap = wordsMap.get(word);
-            wordInMap.setFrequency(wordInMap.getDocIds().size());
-            Collections.sort(wordInMap.getDocIds());
-        }
-    }
-
     private void writeToFile(String pathTo) {
         File fileTo = new File(pathTo);
         if (!fileTo.exists()) {
@@ -156,8 +72,26 @@ public class PostIndexing {
         }
     }
 
+    private void addToWords(@NotNull Map<String, Integer> dict) {
+        for (String s : dict.keySet()) {
+            int docId = dict.get(s);
+            Words w = new Words(s, 0, new LinkedList<>());
+            w.addToPostingIndex(docId);
+            if (!wordsMap.containsKey(s)) {
+                wordsMap.put(s, w);
+            } else {
+                wordsMap.get(s).addToPostingIndex(docId);
+            }
+        }
 
-    private List<Integer> mergeTwo(@NotNull List<Integer> ls1, List<Integer> ls2) {
+        for (String word : wordsMap.keySet()) {
+            Words wordInMap = wordsMap.get(word);
+            wordInMap.setFrequency(wordInMap.getDocIds().size());
+            Collections.sort(wordInMap.getDocIds());
+        }
+    }
+
+    private List<Integer> mergeTwo(List<Integer> ls1, List<Integer> ls2) {
         List<Integer> ret = new LinkedList<>();
         int cur1 = 0, cur2 = 0;
         while (cur1 <= ls1.size() - 1 && cur2 <= ls2.size() - 1) {
@@ -182,7 +116,6 @@ public class PostIndexing {
             wordsList.add(wordsMap.get(s));
         }
         Collections.sort(wordsList);
-        System.out.println(wordsList);
         List<Integer> ret = wordsList.get(0).getDocIds();
         int curIndex = 1;
         while (curIndex < wordsList.size()) {
@@ -257,24 +190,24 @@ public class PostIndexing {
             put("not", 2);
             put("and", 3);
             put("or", 3);
-        }};
+        }};//设置优先级
         LinkedList<String> stack = new LinkedList<>();
         LinkedList<String> res = new LinkedList<>();
 
         for (String s : querySentence) {
+            //名称，直接入栈
             if (!precedence.containsKey(s)) {
                 res.add(s);
-
             } else {
                 if (stack.isEmpty()) {
                     stack.addLast(s);
-                } else if (s.equals(")")) {
+                } else if (s.equals(")")) {//右括号，一直出栈到左括号
                     while (!stack.getLast().equals("(")) {
                         res.addLast(stack.pollLast());
                     }
                     res.addLast(stack.pollLast());
                     stack.addLast(")");
-                } else if (precedence.get(s) >= precedence.get(stack.getLast())) {
+                } else if (precedence.get(s) >= precedence.get(stack.getLast())) {//元素优先级不高于栈顶元素优先级，出栈元素
                     while (!stack.isEmpty() && precedence.get(s) <= precedence.get(stack.getLast())) {
                         res.addLast(stack.pollLast());
                     }
@@ -302,9 +235,10 @@ public class PostIndexing {
         for (String s : postExpression) {
             if (!operation.contains(s)) {
                 if (!wordsMap.containsKey(s)) {
-                    return null;
+                    stack.addLast(new LinkedList<>());
+                } else {
+                    stack.addLast(wordsMap.get(s).getDocIds());
                 }
-                stack.addLast(wordsMap.get(s).getDocIds());
             } else if (s.equals("and")) {
                 List<Integer> tmp1 = stack.pollLast();
                 List<Integer> tmp2 = stack.pollLast();
@@ -343,8 +277,8 @@ public class PostIndexing {
     public void boolSearch(@NotNull String query) {
         String[] querySentence = query.toLowerCase().trim().split(" +");
         List<Integer> ls = calculatePostExpression(toPostExpression(querySentence));
-        if (ls == null) {
-            System.out.println("No such word exists in any doc! Sorry");
+        if (ls.size() == 0) {
+            System.out.println("No such words exists in any doc! Sorry");
             return;
         }
         for (int i : ls) {
