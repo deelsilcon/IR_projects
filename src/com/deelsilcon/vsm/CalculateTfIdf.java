@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -110,7 +107,10 @@ public class CalculateTfIdf {
 
     public static void main(String[] args) {
         CalculateTfIdf ca = new CalculateTfIdf();
-        ca.readFiles("/home/deelsilcon/IR/E5");
+        System.out.println("Please enter the directory path");
+        Scanner sc = new Scanner(System.in);
+        String path = sc.nextLine();
+        ca.readFiles(path);
         ca.initFileMap(10);
         ca.addToFile();
         ca.getFileSim(10);
