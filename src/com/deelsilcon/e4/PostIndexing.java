@@ -1,4 +1,4 @@
-package com.deelsilcon.posting_Index;
+package com.deelsilcon.e4;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +34,8 @@ public class PostIndexing {
         //添加所有id作为全集，后面实现NOT操作
         allIds.add(docId);
         File file = new File(directoryPath + "/" + fileName);
-        BufferedReader br = null;
-        String curLine = null;
+        BufferedReader br;
+        String curLine;
         Map<String, Integer> dict = new HashMap<>();
         try {
             br = new BufferedReader(new FileReader(file));
@@ -141,7 +141,6 @@ public class PostIndexing {
                 cur2++;
             } else {
                 ret.add(docId1);
-                ;
                 cur1++;
             }
         }
@@ -201,8 +200,8 @@ public class PostIndexing {
             } else {
                 if (stack.isEmpty()) {
                     stack.addLast(s);
-                } else if (s.equals(")")) {//右括号，一直出栈到左括号
-                    while (!stack.getLast().equals("(")) {
+                } else if (")".equals(s)) {//右括号，一直出栈到左括号
+                    while (!"(".equals(stack.getLast())) {
                         res.addLast(stack.pollLast());
                     }
                     res.addLast(stack.pollLast());
@@ -239,17 +238,17 @@ public class PostIndexing {
                 } else {
                     stack.addLast(wordsMap.get(s).getDocIds());
                 }
-            } else if (s.equals("and")) {
+            } else if ("and".equals(s)) {
                 List<Integer> tmp1 = stack.pollLast();
                 List<Integer> tmp2 = stack.pollLast();
                 List<Integer> result = mergeTwo(tmp1, tmp2);
                 stack.addLast(result);
-            } else if (s.equals("or")) {
+            } else if ("or".equals(s)) {
                 List<Integer> tmp1 = stack.pollLast();
                 List<Integer> tmp2 = stack.pollLast();
                 List<Integer> result = addTwo(tmp1, tmp2);
                 stack.addLast(result);
-            } else if (s.equals("not")) {
+            } else if ("not".equals(s)) {
                 List<Integer> tmp = stack.pollLast();
                 List<Integer> result = complementList(tmp);
                 stack.addLast(result);
@@ -293,7 +292,7 @@ public class PostIndexing {
         pi.processingFile(sc);
         System.out.println("Do you want to save the dict.index file?(YES/NO)");
         String ans = sc.nextLine();
-        if (ans.equalsIgnoreCase("YES") || ans.equalsIgnoreCase("Y")) {
+        if ("YES".equalsIgnoreCase(ans) || "Y".equalsIgnoreCase(ans)) {
             pi.saveIndex(sc);
         }
         System.out.println("Please enter the bool search sentence");

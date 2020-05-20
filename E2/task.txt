@@ -1,0 +1,9 @@
+1.利用最大匹配算法来实现中文分词；
+2.比较分词结果与答案，得到PRF值；
+输入：
+    corpus.sentence.txt
+输出：
+    corpus.out.txt;
+    PRF值
+
+说明：corpus.answers.txt为标准答案；corpus.dict.txt为语料词典；corpus.sentence.txt为待处理文件

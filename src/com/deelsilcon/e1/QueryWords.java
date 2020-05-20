@@ -1,4 +1,4 @@
-package Tools;
+package com.deelsilcon.e1;
 
 import java.io.*;
 import java.util.*;
@@ -20,8 +20,8 @@ public class QueryWords {
          */
         File file = new File(filename);
         List<String> fileContent = new ArrayList<>();
-        BufferedReader br = null;
-        String cur = null;
+        BufferedReader br;
+        String cur;
         try {
             br = new BufferedReader(new FileReader(file));
             while ((cur = br.readLine()) != null) {
@@ -37,25 +37,24 @@ public class QueryWords {
         for (String s : fileContent) {
             String[] lineWords = s.toLowerCase().split("[^a-z]+");
             Set<String> wordSet = hashMap.keySet();
-            for (int i = 0; i < lineWords.length; i++) {
-                if (wordSet.contains(lineWords[i])) {
-                    Integer number = hashMap.get(lineWords[i]);
+            for (String lineWord : lineWords) {
+                if (wordSet.contains(lineWord)) {
+                    Integer number = hashMap.get(lineWord);
                     number++;
-                    hashMap.put(lineWords[i], number);
+                    hashMap.put(lineWord, number);
                 } else {
-                    hashMap.put(lineWords[i], 1);
+                    hashMap.put(lineWord, 1);
                 }
             }
         }
 
-
         /*
         save the file;
          */
-        File fileTo = new File("D:/IR/dict.index");
+        File fileTo = new File("/home/deelsilcon/IR/E1/dict.index");
         if (!fileTo.exists()) {
             for (String str : hashMap.keySet()) {
-                FileOutputStream fo = null;
+                FileOutputStream fo;
                 PrintStream ps = null;
                 try {
                     fo = new FileOutputStream(fileTo, true);
@@ -63,6 +62,7 @@ public class QueryWords {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+                assert ps != null;
                 ps.print(str + "\t" + hashMap.get(str) + "\n");
                 ps.close();
             }

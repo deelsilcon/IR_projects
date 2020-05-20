@@ -1,4 +1,4 @@
-package com.deelsilcon.vsm;
+package com.deelsilcon.e5;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,8 +32,8 @@ public class CalculateTfIdf {
         //取出doc文档编号
         int docId = Integer.parseInt(Pattern.compile("[^0-9]").matcher(fileName).replaceAll("").trim());
         File file = new File(directoryPath + "/" + fileName);
-        BufferedReader br = null;
-        String curLine = null;
+        BufferedReader br;
+        String curLine;
         try {
             br = new BufferedReader(new FileReader(file));
             while ((curLine = br.readLine()) != null) {
@@ -46,7 +46,6 @@ public class CalculateTfIdf {
                         wordsMap.put(word.toLowerCase(), newWord);
                     } else {
                         int times = wordsMap.get(word.toLowerCase()).getDocIds().getOrDefault(docId, 0);
-                        ;
                         wordsMap.get(word.toLowerCase()).getDocIds().put(docId, times + 1);
                     }
                     int freq = wordsMap.get(word.toLowerCase()).getDocIds().size();

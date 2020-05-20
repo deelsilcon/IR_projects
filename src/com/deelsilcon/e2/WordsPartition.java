@@ -1,4 +1,4 @@
-package com.deelsilcon.CNsegment;
+package com.deelsilcon.e2;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -20,14 +20,16 @@ public class WordsPartition {
      */
     private void readDict(String path) {
         File file = new File(path);
-        BufferedReader br = null;
-        String curLine = null;
+        BufferedReader br;
+        String curLine;
         int line = 0;
         try {
             br = new BufferedReader(new FileReader(file));
             while ((curLine = br.readLine()) != null) {
                 line++;
-                if (line == 1) continue;
+                if (line == 1) {
+                    continue;
+                }
                 dict.add(curLine);
             }
         } catch (IOException e) {
@@ -40,8 +42,8 @@ public class WordsPartition {
      */
     private void readFile(String path) {
         File file = new File(path);
-        BufferedReader br = null;
-        String curLine = null;
+        BufferedReader br;
+        String curLine;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
             while ((curLine = br.readLine()) != null) {
@@ -55,11 +57,11 @@ public class WordsPartition {
     /**
      * @param toPath The destination path
      */
-    private void writeFile(String toPath) throws IOException {
+    private void writeFile(String toPath) {
         File fileTo = new File(toPath);
         if (!fileTo.exists()) {
             for (String str : res) {
-                FileOutputStream fo = null;
+                FileOutputStream fo;
                 PrintStream ps = null;
                 try {
                     fo = new FileOutputStream(fileTo, true);

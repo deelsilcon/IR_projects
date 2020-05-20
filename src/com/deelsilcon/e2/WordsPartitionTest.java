@@ -1,4 +1,4 @@
-package com.deelsilcon.CNsegment;
+package com.deelsilcon.e2;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,8 +44,8 @@ public class WordsPartitionTest {
      */
     private void readFile(String path, List<String> content) {
         File file = new File(path);
-        BufferedReader br = null;
-        String curLine = null;
+        BufferedReader br;
+        String curLine;
         try {
             br = new BufferedReader(new FileReader(file));
             while ((curLine = br.readLine()) != null) {
@@ -68,8 +68,9 @@ public class WordsPartitionTest {
         int curPosRef = 0;
         int i = 0, j;
         while (i < out.size()) {
-            if (i == ref.size())
+            if (i == ref.size()) {
                 break;
+            }
             if (curPosOut < curPosRef) {
                 String s = out.get(i);
                 curPosOut += s.length();

@@ -1,16 +1,19 @@
-package com.deelsilcon.posting_Index;
+package com.deelsilcon.e5;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * @author deelsilcon
+ */
 public class Words implements Comparable<Words> {
     private String word;
     private int frequency;
-    private List<Integer> docIds;
+    private HashMap<Integer, Integer> docIds;
 
-    public Words(String word, int frequency, LinkedList<Integer> docIds) {
+    public Words(String word, int frequency, HashMap<Integer, Integer> docIds) {
         this.word = word;
         this.frequency = frequency;
         this.docIds = docIds;
@@ -39,7 +42,7 @@ public class Words implements Comparable<Words> {
         return frequency;
     }
 
-    public List<Integer> getDocIds() {
+    public Map<Integer, Integer> getDocIds() {
         return docIds;
     }
 
@@ -47,18 +50,6 @@ public class Words implements Comparable<Words> {
         this.frequency = frequency;
     }
 
-    public void addToPostingIndex(int docId) {
-        getDocIds().add(docId);
-    }
-
-    public String printDocIds() {
-        StringBuilder sb = new StringBuilder();
-        for (int docId : getDocIds()) {
-            sb.append(docId);
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
 
     @Override
     public String toString() {
